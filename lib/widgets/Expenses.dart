@@ -1,5 +1,6 @@
 // this file is for main screen design
 
+import 'package:expense_tracker/widgets/chart/chart.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker/models/Expense.dart';
 import 'package:expense_tracker/widgets/ExpensesListWidget.dart';
@@ -30,6 +31,7 @@ class _ExpensesState extends State<Expenses> {
 
   void addExpensesDetails() {
     showModalBottomSheet(
+        useSafeArea: true,
         isScrollControlled: true,
         context: context,
         builder: (ctx) => AddNewExpense(newexpenseadding));
@@ -62,8 +64,9 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(context) {
-    Widget maincontent =
-        Center(child: Text('No expense found. Kindly enter a new expense'));
+    final wid = MediaQuery.of(context).size.width;
+    Widget maincontent = const Center(
+        child: Text('No expense found. Kindly enter a new expense'));
 
     if (expenseslist.isNotEmpty) {
       maincontent = ExpensesListWidget(
@@ -73,18 +76,27 @@ class _ExpensesState extends State<Expenses> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flutter ExpenseTracker'),
-        actions: [
-          IconButton(
-            onPressed: addExpensesDetails,
-            icon: const Icon(Icons.add_rounded),
-          )
-        ],
-      ),
-      body: Column(
-        children: [const Text('Graph'), Expanded(child: maincontent)],
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('Flutter ExpenseTracker'),
+          actions: [
+            IconButton(
+              onPressed: addExpensesDetails,
+              icon: const Icon(Icons.add_rounded),
+            )
+          ],
+        ),
+        body: wid < 600
+            ? Column(
+                children: [
+                  Chart(expenses: expenseslist),
+                  Expanded(child: maincontent)
+                ],
+              )
+            : Row(
+                children: [
+                  Expanded(child: Chart(expenses: expenseslist)),
+                  Expanded(child: maincontent)
+                ],
+              ));
   }
 }
